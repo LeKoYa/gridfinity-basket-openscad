@@ -2,9 +2,9 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-An openscad script for baskets with a gridfinity base on the inside. Includes many customization options.
+An openscad script for stackable baskets with a gridfinity base on the inside. Includes many customization options.
 
-The model and various example baskets are also available on makerworld/printables. The site on makerworld also supports the parametric model maker to easily create baskets with different options.
+The model and various example baskets are also available on makerworld/printables. The site on makerworld also supports the parametric model maker to easily create baskets with different options directly on the site.
 
 [Makerworld site](site)
 
@@ -42,11 +42,10 @@ Below is a list of all possible customization options. Although it is possible f
 | `PatternMinDist`    | Minimum distance between patterns                               | `number` | `2`     | `0.5` to `5`, step `0.1` |
 | `GridPatternRadius` | Outer radius of grid pattern (not applicable to other patterns) | `number` | `3`     | `0` to `10`, step `0.5`  |
 
+# Additional tips
+- The Grid pattern can be quite fragile. Use a large `PatternMinDist` and possibly a larger `WallThickness`. 
+- No need for supports or brim when printing the baskets.
 
-# Acknowledgements
-The base generation is inspired and adapted from the [gridfinity-rebuilt-openscad project](https://github.com/kennetek/gridfinity-rebuilt-openscad). 
-
-The general idea is based on the [Gridfinity-baseplate-basket-parametric](https://www.printables.com/model/970197-gridfinity-baseplate-basket-parametric) model by Blaise's Workshop. In comparison to that model, the gridfinity basket here offers much more customization options and various improvements like the support for padding and different wall sizes. 
 
 # Example baskets
 #### Animation of various settings
@@ -63,3 +62,10 @@ The general idea is based on the [Gridfinity-baseplate-basket-parametric](https:
 
 #### 5_3_8 Basket with hollow floor and no wall pattern.
 ![5_3_8 Basket with hollow floor and no wall pattern](img/5_3_8_none_nofloor.jpg)
+
+
+
+# Acknowledgements
+The base generation is inspired and adapted from the [gridfinity-rebuilt-openscad project](https://github.com/kennetek/gridfinity-rebuilt-openscad). 
+
+The general idea is based on the [Gridfinity-baseplate-basket-parametric](https://www.printables.com/model/970197-gridfinity-baseplate-basket-parametric) model by Blaise's Workshop. In comparison to that model, the gridfinity basket here offers much more customization options and various improvements like the support for padding and different wall sizes. 

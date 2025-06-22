@@ -43,7 +43,7 @@ MinThickness = 0.4;
 // only used for use with the animate.scad script. Don't change this here
 // can also be set to true for developing or testing.
 // turn off for export
-Render = true;
+Render = false;
 
 /* [General Settings] */
 
@@ -54,7 +54,7 @@ UseMulticolor = false;
 UseGridfinityBase = true;
 
 // Gridsize
-GridSize = [2,2,4]; // [1:1:]
+GridSize = [2,2,6]; // [1:1:]
 
 // Padding between edge of gridfinity base and the basket walls
 Padding = 1; // [0:0.1:10]
@@ -79,10 +79,10 @@ Standoff = 1; // [1:0.1:2]
 // extra room between top of any bin and bottom of another basket stacked on top
 TopPadding = 2 ; // [0.5:0.1:5]
 
-// XY tolerance
+// XY tolerance (leave as-is in most cases)
 XYTolerance = 0.5; // [0.2:0.05:1]
 
-// Z tolerance
+// Z tolerance (lave as-is in most cases)
 ZTolerance = 0.25; // [0.25::0.25]
 
 /* [Pattern Settings] */
@@ -91,7 +91,7 @@ ZTolerance = 0.25; // [0.25::0.25]
 PatternSize = 8; // [4:0.5:15]
 
 // Minimum distance from pattern to start of basket outer corner
-PatternEdgeDist = 2; // [0:0.1:5]
+PatternEdgeDist = 1.5; // [0:0.1:5]
 
 // Minimum distance between patterns
 PatternMinDist = 2; // [0.5:0.1:5]
