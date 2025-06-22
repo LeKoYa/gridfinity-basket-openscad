@@ -6,7 +6,7 @@ An openscad script for stackable baskets with a gridfinity base on the inside. I
 
 The model and various example baskets are also available on makerworld/printables. The site on makerworld also supports the parametric model maker to easily create baskets with different options directly on the site.
 
-[Makerworld site](site)
+[Makerworld site](https://makerworld.com/en/models/1542416-stackable-gridfinity-storage-basket-parametric)
 
 [Printables site](site)
 
