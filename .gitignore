@@ -1,0 +1,5 @@
+ignore/
+stl/
+batch/
+site/
+/*.json
