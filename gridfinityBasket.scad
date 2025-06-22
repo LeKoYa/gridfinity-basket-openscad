@@ -40,16 +40,21 @@ BASEPLATE_INNER_DIAMETER = BASEPLATE_INNER_RADIUS * 2;
 // min_thickness
 MinThickness = 0.4;
 
+// only used for use with the animate.scad script. Don't change this here
+// can also be set to true for developing or testing.
+// turn off for export
+Render = true;
+
 /* [General Settings] */
 
 // Add color to the model
-UseMulticolor = true;
+UseMulticolor = false;
 
 // Include a gridfinity base inside the basket?
-UseGridfinityBase = false;
+UseGridfinityBase = true;
 
 // Gridsize
-GridSize = [3, 2, 4]; // [1:1:]
+GridSize = [2,2,4]; // [1:1:]
 
 // Padding between edge of gridfinity base and the basket walls
 Padding = 1; // [0:0.1:10]
@@ -64,7 +69,7 @@ FloorHeight = 1; // [0:0.04:3]
 SolidFloor = true;
 
 // Wall Pattern
-WallPattern = 2; // [0:None, 1:HexGrid, 2:Grid]
+WallPattern = 1; // [0:None, 1:HexGrid, 2:Grid]
 
 /* [Stacking Settings] */
 
@@ -89,7 +94,7 @@ PatternSize = 8; // [4:0.5:15]
 PatternEdgeDist = 2; // [0:0.1:5]
 
 // Minimum distance between patterns
-PatternMinDist = 2.5; // [0.5:0.1:5]
+PatternMinDist = 2; // [0.5:0.1:5]
 
 // Outer radius of grid pattern (has no effect on other patterns)
 GridPatternRadius = 3; // [0:0.5:10]
@@ -496,7 +501,7 @@ module stacking_lip_cutter() {
 /* 
 Creates a single gridfinity hex basket with settings from the top of the file 
 */
-module hex_basket() {
+module basket() {
     // center on origin
     translate(-[total_outer_size_mm.x/2, total_outer_size_mm.y/2])
         difference() {
@@ -526,18 +531,43 @@ module add_color(y, height, color) {
     }
 }
 
-if (UseMulticolor) {
-    cut1 = FloorHeight+BASEPLATE_HEIGHT;
-    cut2 = total_height_mm-(WallThickness-MinThickness);
 
-    add_color(0, cut1, "red")
-        hex_basket();
+// actually create a basket with the given settings
+// Render is only changed by the animate.scad script.
+// This is outside of a module so multi-color export works with openscad
+if (Render) {
+    render() {
+        if (UseMulticolor) {
+            cut1 = FloorHeight+BASEPLATE_HEIGHT;
+            cut2 = total_height_mm-(WallThickness-MinThickness);
 
-    add_color(cut1, cut2-cut1, "green")
-        hex_basket();
+            add_color(0, cut1, "red")
+                basket();
 
-    add_color(cut2, WallThickness-MinThickness, "blue")
-        hex_basket();
+            add_color(cut1, cut2-cut1, "green")
+                basket();
+
+            add_color(cut2, WallThickness-MinThickness, "blue")
+                basket();
+        } else {
+                basket();
+        }
+    }
 } else {
-    hex_basket();
+    if (UseMulticolor) {
+        cut1 = FloorHeight+BASEPLATE_HEIGHT;
+        cut2 = total_height_mm-(WallThickness-MinThickness);
+
+        add_color(0, cut1, "red")
+            basket();
+
+        add_color(cut1, cut2-cut1, "green")
+            basket();
+
+        add_color(cut2, WallThickness-MinThickness, "blue")
+            basket();
+    } else {
+            basket();
+    }
 }
+
