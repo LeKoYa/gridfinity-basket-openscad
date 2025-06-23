@@ -26,7 +26,7 @@ Below is a list of all possible customization options. Although it is possible f
 | `SolidFloor`        | Make floor solid (requires `FloorHeight > 0`)            | `bool`   | `true`    | `true`, `false`                    |
 | `MagnetDiameter` | Diamenter of the magnets. If set to zero, no magnet holes will be created. Increase this value to add some tolerance for magnet insertion. | `number` | `6.5` | `0` to `8`, step `0.05` |
 | `MagnetHeight` | Height of the magnets. If set to zero, no magnet holes will be created. Increase this value to add some tolerance for magnet insertion. | `number` | `2.1` | `0` to `4`, step `0.05` |
-| `AddMagnetChamfer` | Add additional chamfer around magnet holes to help with insertion | `bool` | `false` | `true`, `false` |
+| `AddMagnetChamfer` | Add additional chamfers around magnet holes to help with insertion | `bool` | `false` | `true`, `false` |
 
 ### WallPattern options
 | Parameter           | Description                                                     | Type     | Default | Allowed Values / Range   |
@@ -43,7 +43,7 @@ Below is a list of all possible customization options. Although it is possible f
 | `Standoff`    | Vertical standoff height at the bottom of the basket (the part that sticks into another basket when stacked ontop of eachother)         | `number` | `1`     | `1` to `2`, step `0.1`                    |
 | `TopPadding`  | Extra room above bins for stacking | `number` | `2`     | `0.5` to `5`, step `0.1`                  |
 | `XYTolerance` | XY-axis tolerance (should keep as-is in most-cases)                | `number` | `0.5`   | `0.2` to `1`, step `0.05`                 |
-| `ZTolerance`  | Z-axis tolerance (should keep as-is in most-cases)                 | `number` | `0.25`  | `0.25`, `0.5`, `0.75`, etc. (step `0.25`) |
+| `ZTolerance`  | Z-axis tolerance (should keep as-is in most-cases)                 | `number` | `0.25`  | `0.25` |
 
 # Additional tips
 - The Grid pattern can be quite fragile. Use a large `PatternMinDist` and possibly a larger `WallThickness`. 

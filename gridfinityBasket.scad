@@ -80,7 +80,7 @@ MagnetDiameter = 6.5; // [0:0.05:8]
 // Height of the magnets. If set to zero, no magnet holes will be created. Increase this value to add some tolerance for magnet insertion.
 MagnetHeight = 2.1; // [1:0.05:4]
 
-// Add additional chamfer around magnet holes to help with insertion
+// Add additional chamfers around magnet holes to help with insertion
 AddMagnetChamfer = false;
 
 /* [WallPattern Settings] */
@@ -102,7 +102,7 @@ GridPatternRadius = 3; // [0:0.5:10]
 
 /* [Stacking Settings] */
 
-// Standoff
+// How far down a basket reaches into a basket under it. Increasing this value decreses wiggle when stacking baskets. 
 Standoff = 1; // [1:0.1:2]
 
 // extra room between top of any bin and bottom of another basket stacked on top
@@ -112,7 +112,7 @@ TopPadding = 2 ; // [0.5:0.1:5]
 XYTolerance = 0.5; // [0.2:0.05:1]
 
 // Z tolerance (lave as-is in most cases)
-ZTolerance = 0.25; // [0.25::0.25]
+ZTolerance = 0.25; 
 
 
 // ===== Calculations ===== //
