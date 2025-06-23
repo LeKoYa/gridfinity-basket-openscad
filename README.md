@@ -8,7 +8,7 @@ The model and various example baskets are also available on makerworld/printable
 
 [Makerworld site](https://makerworld.com/en/models/1542416-stackable-gridfinity-storage-basket-parametric)
 
-[Printables site](site)
+[Printables site](https://www.printables.com/model/1335756-stackable-gridfinity-storage-basket-parametric)
 
 
 # Customization options
