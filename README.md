@@ -66,7 +66,8 @@ Below is a list of all possible customization options. Although it is possible f
 #### 5_3_8 Basket with hollow floor and no wall pattern.
 ![5_3_8 Basket with hollow floor and no wall pattern](img/5_3_8_none_nofloor.jpg)
 
-
+#### Optional Magnet holes with the option for additional chamfers
+![Example basket with magnet holes](img/magnetholes.png)
 
 # Acknowledgements
 The base generation is inspired and adapted from the [gridfinity-rebuilt-openscad project](https://github.com/kennetek/gridfinity-rebuilt-openscad). 
