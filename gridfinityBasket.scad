@@ -33,12 +33,18 @@ BASEPLATE_OUTER_RADIUS = BASEPLATE_OUTER_DIAMETER / 2;
 BASEPLATE_INNER_RADIUS = BASEPLATE_OUTER_RADIUS - BASEPLATE_PROFILE[3].x;
 BASEPLATE_INNER_DIAMETER = BASEPLATE_INNER_RADIUS * 2;
 
+// distance from center of magnet hole to edge of baseplate section
+MAGNET_EDGE_DIST = 8;
 
 // ===== Parameters ===== //
 
 /* [Hidden]*/
-// min_thickness
-MinThickness = 0.4;
+// Minimum wall thickness
+MinWallThickness = 0.4;
+
+// Additional height from the bottom of the magnet holes to the top of the added floor.
+// Necessary in case the AdditionalFloorHeight is set to zero.
+MinMagnetFloorHeight = 0.4;
 
 // only used for use with the animate.scad script. Don't change this here
 // can also be set to true for developing or testing.
@@ -54,7 +60,7 @@ UseMulticolor = false;
 UseGridfinityBase = true;
 
 // Gridsize
-GridSize = [2,2,6]; // [1:1:]
+GridSize = [3,3,6]; // [1:1:]
 
 // Padding between edge of gridfinity base and the basket walls
 Padding = 1; // [0:0.1:10]
@@ -62,14 +68,37 @@ Padding = 1; // [0:0.1:10]
 // Wall Thickness of the Basket
 WallThickness = 1.2; // [0.4:0.1:2]
 
-// Floor height added to the bottom of the basket
-FloorHeight = 1; // [0:0.04:3]
+// Additional floor height added to the bottom of the basket. 
+AdditionalFloorHeight = 1; // [0:0.04:3]
 
-// Solid floor? Requires FloorHeight > 0 to work
+// Solid floor? Requires AdditionalFloorHeight > 0 to work
 SolidFloor = true;
+
+// Diamenter of the magnets. If set to zero, no magnet holes will be created. Increase this value to add some tolerance for magnet insertion.
+MagnetDiameter = 6.5; // [0:0.05:8]
+
+// Height of the magnets. If set to zero, no magnet holes will be created. Increase this value to add some tolerance for magnet insertion.
+MagnetHeight = 2.1; // [1:0.05:4]
+
+// Add additional chamfer around magnet holes to help with insertion
+AddMagnetChamfer = false;
+
+/* [WallPattern Settings] */
 
 // Wall Pattern
 WallPattern = 1; // [0:None, 1:HexGrid, 2:Grid]
+
+// Pattern feature size
+PatternSize = 8; // [4:0.5:15]
+
+// Minimum distance from pattern to start of basket outer corner
+PatternEdgeDist = 1.5; // [0:0.1:5]
+
+// Minimum distance between patterns
+PatternMinDist = 2; // [0.5:0.1:5]
+
+// Outer radius of grid pattern (has no effect on other patterns)
+GridPatternRadius = 3; // [0:0.5:10]
 
 /* [Stacking Settings] */
 
@@ -85,24 +114,13 @@ XYTolerance = 0.5; // [0.2:0.05:1]
 // Z tolerance (lave as-is in most cases)
 ZTolerance = 0.25; // [0.25::0.25]
 
-/* [Pattern Settings] */
-
-// Pattern feature size
-PatternSize = 8; // [4:0.5:15]
-
-// Minimum distance from pattern to start of basket outer corner
-PatternEdgeDist = 1.5; // [0:0.1:5]
-
-// Minimum distance between patterns
-PatternMinDist = 2; // [0.5:0.1:5]
-
-// Outer radius of grid pattern (has no effect on other patterns)
-GridPatternRadius = 3; // [0:0.5:10]
-
 
 // ===== Calculations ===== //
 
 /* [Hidden] */
+
+// Necessary height needed for magnets. 
+magnet_clearance = (MagnetDiameter > 0 && MagnetHeight > 0 && UseGridfinityBase && SolidFloor) ? MagnetHeight + MinMagnetFloorHeight : 0;
 
 total_grid_size_mm = [BASEPLATE_DIMENSIONS.x * GridSize.x, BASEPLATE_DIMENSIONS.y * GridSize.y];
 total_inner_size_mm = foreach_add(total_grid_size_mm, 2 * Padding);
@@ -113,10 +131,14 @@ total_grid_height_mm = BASEPLATE_HEIGHT + 2 + 4.4 + 7*(GridSize.z-1);
 
 // another basket sits inside by standoff mm and even further by ztolerance, starting from the lowest point of the top stacking lip. 
 // Added top padding increases distance between bins and top of another basket stacked on top
-total_height_mm = total_grid_height_mm + FloorHeight + Standoff + ZTolerance + (WallThickness-MinThickness) + TopPadding;
+// Also add some height for magnets if necessary
+total_height_mm = total_grid_height_mm + AdditionalFloorHeight + Standoff + ZTolerance + (WallThickness-MinWallThickness) + TopPadding + magnet_clearance;
 
 // The total height of the bottom stacking lip
 bottom_stacking_lip_height = Standoff + ZTolerance + WallThickness + XYTolerance;
+
+// Total height from the bottom of the basket up untip the top of the baseplate
+total_baseplate_height_mm = BASEPLATE_HEIGHT + AdditionalFloorHeight + magnet_clearance;
 
 
 // ===== Helper functions and modules ===== //
@@ -278,20 +300,41 @@ module baseplate_cutter() {
 }
 
 /* 
+Module that creates a hole for a single magnet with optional chamfer
+*/
+module magnet_hole() {
+    additional_chamfer_width = (magnet_clearance && AddMagnetChamfer) ? 0.2*MagnetHeight : 0;
+    profile = [
+        [MagnetDiameter/2, 0],
+        [MagnetDiameter/2, 0.8*MagnetHeight],
+        [MagnetDiameter/2+additional_chamfer_width, MagnetHeight],
+        [0, MagnetHeight],
+        [0, 0],
+        [0, 0]
+    ];
+    // Use non zero size to make sure sweep_rounded works correctly
+    sweep_rounded([0.001,0.001,0]) {
+        polygon(profile);
+    }
+}
+
+/* 
 Creates a gridfinity baseplate with GridSize
 */
 module gridfinity_baseplate(round_corner=true) { 
     radius = round_corner ? BASEPLATE_OUTER_RADIUS : 0;
+    magnet_offset_x = BASEPLATE_DIMENSIONS.x - 2 * MAGNET_EDGE_DIST;
+    magnet_offset_y = BASEPLATE_DIMENSIONS.y - 2 * MAGNET_EDGE_DIST;
     difference() {
         // Create square with size of outer dimensions
-        round_square(size = concat(total_inner_size_mm, BASEPLATE_HEIGHT+FloorHeight), radius = radius, center=false);
+        round_square(size = concat(total_inner_size_mm, total_baseplate_height_mm), radius = radius, center=false);
 
         // substract GridSize baseplate cutters
         union() {
             for (i = [0:GridSize.x-1], j = [0:GridSize.y-1]) {
                 translation = [(BASEPLATE_DIMENSIONS.x/2)+(i*BASEPLATE_DIMENSIONS.x)+Padding, 
                                (BASEPLATE_DIMENSIONS.y/2)+(j*BASEPLATE_DIMENSIONS.y)+Padding,
-                               FloorHeight];
+                               AdditionalFloorHeight+magnet_clearance];
 
                 if (UseGridfinityBase) {
                     translate(translation)
@@ -299,8 +342,19 @@ module gridfinity_baseplate(round_corner=true) {
                 }
                 if(!SolidFloor) {
                     translate([translation.x, translation.y, 0])
-                        round_square(size=concat(foreach_add(BASEPLATE_DIMENSIONS, BASEPLATE_INNER_DIAMETER-BASEPLATE_OUTER_DIAMETER), FloorHeight), 
+                        round_square(size=concat(foreach_add(BASEPLATE_DIMENSIONS, BASEPLATE_INNER_DIAMETER-BASEPLATE_OUTER_DIAMETER), AdditionalFloorHeight), 
                                      radius=BASEPLATE_INNER_RADIUS,center=true);
+                }
+                // add holes for magnets
+                if(magnet_clearance > 0) {
+                    translate(translation)
+                    translate([MAGNET_EDGE_DIST-BASEPLATE_DIMENSIONS.x/2, MAGNET_EDGE_DIST-BASEPLATE_DIMENSIONS.y/2, -MagnetHeight])  
+                        union() {
+                            magnet_hole();
+                            translate([magnet_offset_x, 0]) magnet_hole();
+                            translate([0, magnet_offset_y]) magnet_hole();
+                            translate([magnet_offset_x, magnet_offset_y]) magnet_hole();
+                        }
                 }
             }
             if (!UseGridfinityBase) {
@@ -318,7 +372,7 @@ Does not create the bottom stacking lip
 */
 module basket_wall() {
     slope_length = WallThickness+ZTolerance; // length in x and y direction of bottom slope
-    top_slope_length = WallThickness - MinThickness; // x,y length of the slope at the top of the bin 
+    top_slope_length = WallThickness - MinWallThickness; // x,y length of the slope at the top of the bin 
 
     // Profile of the basket wall without the bottom stacking lip
     basket_profile = [
@@ -339,10 +393,10 @@ module basket_wall() {
     ];
 
     // Size and position of the patterns
-    pattern_height = total_height_mm - BASEPLATE_HEIGHT - FloorHeight - (WallThickness-MinThickness);
+    pattern_height = total_height_mm - total_baseplate_height_mm - (WallThickness-MinWallThickness);
     pattern_area_x = [(GridSize.x*BASEPLATE_DIMENSIONS.x)-(2*BASEPLATE_OUTER_RADIUS)+2*Padding-2*PatternEdgeDist, pattern_height-2*PatternEdgeDist];
     pattern_area_y = [(GridSize.y*BASEPLATE_DIMENSIONS.y)-(2*BASEPLATE_OUTER_RADIUS)+2*Padding-2*PatternEdgeDist, pattern_height-2*PatternEdgeDist];
-    pattern_corner = [WallThickness+BASEPLATE_OUTER_RADIUS+PatternEdgeDist, FloorHeight+BASEPLATE_HEIGHT+PatternEdgeDist];
+    pattern_corner = [WallThickness+BASEPLATE_OUTER_RADIUS+PatternEdgeDist, total_baseplate_height_mm+PatternEdgeDist];
 
     difference() {
         // create the outer wall
@@ -538,8 +592,8 @@ module add_color(y, height, color) {
 if (Render) {
     render() {
         if (UseMulticolor) {
-            cut1 = FloorHeight+BASEPLATE_HEIGHT;
-            cut2 = total_height_mm-(WallThickness-MinThickness);
+            cut1 = total_baseplate_height_mm;
+            cut2 = total_height_mm-(WallThickness-MinWallThickness);
 
             add_color(0, cut1, "red")
                 basket();
@@ -547,7 +601,7 @@ if (Render) {
             add_color(cut1, cut2-cut1, "green")
                 basket();
 
-            add_color(cut2, WallThickness-MinThickness, "blue")
+            add_color(cut2, WallThickness-MinWallThickness, "blue")
                 basket();
         } else {
                 basket();
@@ -555,8 +609,8 @@ if (Render) {
     }
 } else {
     if (UseMulticolor) {
-        cut1 = FloorHeight+BASEPLATE_HEIGHT;
-        cut2 = total_height_mm-(WallThickness-MinThickness);
+        cut1 = total_baseplate_height_mm;
+        cut2 = total_height_mm-(WallThickness-MinWallThickness);
 
         add_color(0, cut1, "red")
             basket();
@@ -564,10 +618,9 @@ if (Render) {
         add_color(cut1, cut2-cut1, "green")
             basket();
 
-        add_color(cut2, WallThickness-MinThickness, "blue")
+        add_color(cut2, WallThickness-MinWallThickness, "blue")
             basket();
     } else {
             basket();
     }
 }
-

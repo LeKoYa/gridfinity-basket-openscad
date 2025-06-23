@@ -22,9 +22,20 @@ Below is a list of all possible customization options. Although it is possible f
 | `GridSize`          | Grid size in `[X, Y, Z]` format, in multiples of 1U gridfinity units | `array`  | `[2,2,4]` | Integers ≥ 1                       |
 | `Padding`           | Padding between edge of Gridfinity base and basket walls (zero padding makes bins with the same size as the basket hard to put in/take out)| `number` | `1`       | `0` to `10`, step `0.1`            |
 | `WallThickness`     | Wall thickness of the basket                             | `number` | `1.2`     | `0.4` to `2`, step `0.1`           |
-| `FloorHeight`       | Floor height added to bottom of basket                   | `number` | `1`       | `0` to `3`, step `0.04`            |
+| `AdditionalFloorHeight`       | Additional floor height added to bottom of basket                   | `number` | `1`       | `0` to `3`, step `0.04`            |
 | `SolidFloor`        | Make floor solid (requires `FloorHeight > 0`)            | `bool`   | `true`    | `true`, `false`                    |
+| `MagnetDiameter` | Diamenter of the magnets. If set to zero, no magnet holes will be created. Increase this value to add some tolerance for magnet insertion. | `number` | `6.5` | `0` to `8`, step `0.05` |
+| `MagnetHeight` | Height of the magnets. If set to zero, no magnet holes will be created. Increase this value to add some tolerance for magnet insertion. | `number` | `2.1` | `0` to `4`, step `0.05` |
+| `AddMagnetChamfer` | Add additional chamfer around magnet holes to help with insertion | `bool` | `false` | `true`, `false` |
+
+### WallPattern options
+| Parameter           | Description                                                     | Type     | Default | Allowed Values / Range   |
+| ------------------- | --------------------------------------------------------------- | -------- | ------- | ------------------------ |
 | `WallPattern`       | Wall pattern type                                        | `int`    | `1`       | `0: None`, `1: HexGrid`, `2: Grid` |
+| `PatternSize`       | Pattern feature size                                            | `number` | `8`     | `4` to `15`, step `0.5`  |
+| `PatternEdgeDist`   | Min distance from pattern to start of outer edges              | `number` | `2`     | `0` to `5`, step `0.1`   |
+| `PatternMinDist`    | Minimum distance between patterns                               | `number` | `2`     | `0.5` to `5`, step `0.1` |
+| `GridPatternRadius` | Outer radius of grid pattern (not applicable to other patterns) | `number` | `3`     | `0` to `10`, step `0.5`  |
 
 ### Stacking options
 | Parameter     | Description                       | Type     | Default | Allowed Values / Range                    |
@@ -33,14 +44,6 @@ Below is a list of all possible customization options. Although it is possible f
 | `TopPadding`  | Extra room above bins for stacking | `number` | `2`     | `0.5` to `5`, step `0.1`                  |
 | `XYTolerance` | XY-axis tolerance (should keep as-is in most-cases)                | `number` | `0.5`   | `0.2` to `1`, step `0.05`                 |
 | `ZTolerance`  | Z-axis tolerance (should keep as-is in most-cases)                 | `number` | `0.25`  | `0.25`, `0.5`, `0.75`, etc. (step `0.25`) |
-
-### Pattern options
-| Parameter           | Description                                                     | Type     | Default | Allowed Values / Range   |
-| ------------------- | --------------------------------------------------------------- | -------- | ------- | ------------------------ |
-| `PatternSize`       | Pattern feature size                                            | `number` | `8`     | `4` to `15`, step `0.5`  |
-| `PatternEdgeDist`   | Min distance from pattern to start of outer edges              | `number` | `2`     | `0` to `5`, step `0.1`   |
-| `PatternMinDist`    | Minimum distance between patterns                               | `number` | `2`     | `0.5` to `5`, step `0.1` |
-| `GridPatternRadius` | Outer radius of grid pattern (not applicable to other patterns) | `number` | `3`     | `0` to `10`, step `0.5`  |
 
 # Additional tips
 - The Grid pattern can be quite fragile. Use a large `PatternMinDist` and possibly a larger `WallThickness`. 
