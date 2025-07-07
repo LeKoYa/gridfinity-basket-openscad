@@ -91,8 +91,14 @@ WallPattern = 1; // [0:None, 1:HexGrid, 2:Grid]
 // Pattern feature size
 PatternSize = 8; // [4:0.5:15]
 
-// Minimum distance from pattern to start of basket outer corner
-PatternEdgeDist = 1.5; // [0:0.1:5]
+// Minimum distance from the top of the pattern to the start of the stacking lip
+PatternTopDist = 3; // [0:0.1:10]
+
+// Minimum distance from the bottom of the pattern to the baseplate
+PatternBotDist = 1.5; // [0:0.1:10]
+
+// Minimum distance from the pattern sides to the start of the basket outer corner
+PatternSideDist = 2; // [0:0.1:10]
 
 // Minimum distance between patterns
 PatternMinDist = 2; // [0.5:0.1:5]
@@ -394,9 +400,11 @@ module basket_wall() {
 
     // Size and position of the patterns
     pattern_height = total_height_mm - total_baseplate_height_mm - (WallThickness-MinWallThickness);
-    pattern_area_x = [(GridSize.x*BASEPLATE_DIMENSIONS.x)-(2*BASEPLATE_OUTER_RADIUS)+2*Padding-2*PatternEdgeDist, pattern_height-2*PatternEdgeDist];
-    pattern_area_y = [(GridSize.y*BASEPLATE_DIMENSIONS.y)-(2*BASEPLATE_OUTER_RADIUS)+2*Padding-2*PatternEdgeDist, pattern_height-2*PatternEdgeDist];
-    pattern_corner = [WallThickness+BASEPLATE_OUTER_RADIUS+PatternEdgeDist, total_baseplate_height_mm+PatternEdgeDist];
+    pattern_area_x = [  (GridSize.x*BASEPLATE_DIMENSIONS.x)-(2*BASEPLATE_OUTER_RADIUS)+2*Padding-2*PatternSideDist, 
+                        pattern_height-(PatternTopDist+PatternBotDist)];
+    pattern_area_y = [  (GridSize.y*BASEPLATE_DIMENSIONS.y)-(2*BASEPLATE_OUTER_RADIUS)+2*Padding-2*PatternSideDist, 
+                        pattern_height-(PatternTopDist+PatternBotDist)];
+    pattern_corner = [WallThickness+BASEPLATE_OUTER_RADIUS+PatternSideDist, total_baseplate_height_mm+PatternBotDist];
 
     difference() {
         // create the outer wall
