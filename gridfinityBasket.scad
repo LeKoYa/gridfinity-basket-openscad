@@ -75,10 +75,10 @@ AdditionalFloorHeight = 1; // [0:0.04:3]
 SolidFloor = true;
 
 // Diamenter of the magnets. If set to zero, no magnet holes will be created. Increase this value to add some tolerance for magnet insertion.
-MagnetDiameter = 6.5; // [0:0.05:8]
+MagnetDiameter = 6.1; // [0:0.05:8]
 
 // Height of the magnets. If set to zero, no magnet holes will be created. Increase this value to add some tolerance for magnet insertion.
-MagnetHeight = 2.1; // [1:0.05:4]
+MagnetHeight = 2.1; // [0:0.05:4]
 
 // Add additional chamfers around magnet holes to help with insertion
 AddMagnetChamfer = false;
