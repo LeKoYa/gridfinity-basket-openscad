@@ -33,9 +33,20 @@ Below is a list of all possible customization options. Although it is possible f
 | ------------------- | --------------------------------------------------------------- | -------- | ------- | ------------------------ |
 | `WallPattern`       | Wall pattern type                                        | `int`    | `1`       | `0: None`, `1: HexGrid`, `2: Grid` |
 | `PatternSize`       | Pattern feature size                                            | `number` | `8`     | `4` to `15`, step `0.5`  |
-| `PatternEdgeDist`   | Min distance from pattern to start of outer edges              | `number` | `2`     | `0` to `5`, step `0.1`   |
+| `PatternTopDist`    | Minimum distance from the top of the pattern to the start of the stacking lip              | `number` | `3`     | `0` to `10`, step `0.1`   |
+| `PatternBotDist`    | Minimum distance from the bottom of the pattern to the baseplate              | `number` | `1.5`     | `0` to `10`, step `0.1`   |
+| `PatternSideDist`   | Minimum distance from the pattern sides to the start of the basket outer corner   | `number` | `2`     | `0` to `10`, step `0.1`   |
 | `PatternMinDist`    | Minimum distance between patterns                               | `number` | `2`     | `0.5` to `5`, step `0.1` |
 | `GridPatternRadius` | Outer radius of grid pattern (not applicable to other patterns) | `number` | `3`     | `0` to `10`, step `0.5`  |
+
+### Handle options
+| Parameter     | Description                             | Type     | Default | Allowed Values / Range                    |
+| ------------- | ---------------------------------       | -------- | ------- | ----------------------------------------- |
+| `AddHandle`   | Add a handle to the sides of the basket | `bool`   | `true`  | `true`, `false`                           |
+| `HandleWidth`   | Width of the handle. The width may be larger to accommodate the wall pattern | `number`   | `35`  | `20` to `100`, step `1` |
+| `HandleHeight`   | Height of the handle. The height may be larger to accommodate the wall pattern | `number`   | `11`  | `11` to `30`, step `1` |
+| `HandleCorderRadius`   | Radii of the corners on the inside of the handles | `number`   | `4`  | `0` to `5`, step `0.5` |
+| `HandleBorder`   | Minimum border size around the handle | `number`   | `3`  | `2` to `5`, step `0.5` |
 
 ### Stacking options
 | Parameter     | Description                       | Type     | Default | Allowed Values / Range                    |
@@ -48,6 +59,7 @@ Below is a list of all possible customization options. Although it is possible f
 # Additional tips
 - The Grid pattern can be quite fragile. Use a large `PatternMinDist` and possibly a larger `WallThickness`. 
 - No need for supports or brim when printing the baskets.
+- The HandleWidth and HandleHeight set the lower limits for the size of the handle. They might be increased so that the chosen pattern and the area for the handle line up. Otherwise the border of the handle could be floating and couldn't be printed without support.
 
 
 # Example baskets
@@ -68,6 +80,9 @@ Below is a list of all possible customization options. Although it is possible f
 
 #### Optional Magnet holes with the option for additional chamfers
 ![Example basket with magnet holes](img/magnetholes.png)
+
+#### 3_3_8 Basket with hexpattern and handles on the sides
+![3_3_8 Basket with hexpattern and handles](img/handle_example.jpg)
 
 # Acknowledgements
 The base generation is inspired and adapted from the [gridfinity-rebuilt-openscad project](https://github.com/kennetek/gridfinity-rebuilt-openscad). 
