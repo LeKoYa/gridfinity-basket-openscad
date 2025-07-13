@@ -43,10 +43,10 @@ Below is a list of all possible customization options. Although it is possible f
 | Parameter     | Description                             | Type     | Default | Allowed Values / Range                    |
 | ------------- | ---------------------------------       | -------- | ------- | ----------------------------------------- |
 | `AddHandle`   | Add a handle to the sides of the basket | `bool`   | `true`  | `true`, `false`                           |
-| `HandleWidth`   | Width of the handle. The width may be larger to accommodate the wall pattern | `number`   | `35`  | `20` to `100`, step `1` |
-| `HandleHeight`   | Height of the handle. The height may be larger to accommodate the wall pattern | `number`   | `11`  | `11` to `30`, step `1` |
+| `HandleWidth`   | Width of the handle | `number`   | `35`  | `20` to `100`, step `1` |
+| `HandleHeight`   | Height of the handle | `number`   | `11`  | `11` to `30`, step `1` |
 | `HandleCorderRadius`   | Radii of the corners on the inside of the handles | `number`   | `4`  | `0` to `5`, step `0.5` |
-| `HandleBorder`   | Minimum border size around the handle | `number`   | `3`  | `2` to `5`, step `0.5` |
+| `HandleBorder`   | Minimum border size around the handle. The border may be larger to accommodate the wall pattern | `number`   | `3`  | `2` to `5`, step `0.5` |
 
 ### Stacking options
 | Parameter     | Description                       | Type     | Default | Allowed Values / Range                    |
@@ -59,7 +59,7 @@ Below is a list of all possible customization options. Although it is possible f
 # Additional tips
 - The Grid pattern can be quite fragile. Use a large `PatternMinDist` and possibly a larger `WallThickness`. 
 - No need for supports or brim when printing the baskets.
-- The HandleWidth and HandleHeight set the lower limits for the size of the handle. They might be increased so that the chosen pattern and the area for the handle line up. Otherwise the border of the handle could be floating and couldn't be printed without support.
+- The HandleBorder sets the lower limits for the border around the handle. It might be increased so that the chosen pattern and the area for the handle line up. Otherwise the border of the handle could be floating and couldn't be printed without support.
 
 
 # Example baskets

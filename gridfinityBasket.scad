@@ -111,16 +111,16 @@ GridPatternRadius = 4; // [0:0.5:10]
 // Add a handle to the sides of the basket
 AddHandle = true;
 
-// Width of the handle. The width may be larger to accommodate the wall pattern.
+// Width of the handle
 HandleWidth = 35; // [20:1:100]
 
-// Height of the handle. The height may be larger to accommodate the wall pattern.
+// Height of the handle
 HandleHeight = 11; // [11:1:30]
 
 // Radii of the corners on the inside of the handles
 HandleCornerRadius = 4; // [0:0.5:5]
 
-// Minimum thickness around the handle
+// Minimum border around the handle. The border may be larger to accommodate the wall pattern.
 HandleBorder = 3; // [2:0.5:5]
 
 /* [Stacking Settings] */
@@ -526,7 +526,10 @@ Creates the transformation and adjusted size for the handle (fit)
 based on the chosen pattern and creates a positive of the whole handle area including the border
 */
 module add_handle_cutout(pattern_area) {
-    if(WallPattern == 1) { // hex pattern
+    if(WallPattern == 0) { // no pattern
+        fit = no_pattern_handle_fit();
+        handle_cutout(fit);
+    } else if(WallPattern == 1) { // hex pattern
         fit = hex_pattern_handle_fit(pattern_area);
         handle_cutout(fit);
     } else if(WallPattern == 2) { // grid pattern
@@ -536,8 +539,15 @@ module add_handle_cutout(pattern_area) {
         // do nothing
     }
 }
+
+/* 
+Creates only the border around the handle based on the chosen pattern
+*/
 module add_handle_border(pattern_area) {
-    if(WallPattern == 1) { // hex pattern
+    if(WallPattern == 0) { // no pattern
+        fit = no_pattern_handle_fit();
+        handle_border(fit);
+    } else if(WallPattern == 1) { // hex pattern
         fit = hex_pattern_handle_fit(pattern_area);
         handle_border(fit);
     } else if(WallPattern == 2) { // grid pattern
@@ -578,8 +588,12 @@ outer_fit: total adjusted area of the handle repsecting the pattern
 module handle_border(outer_fit) {
     // outer area of the handle with a thickness of WallThickness.
     border_wall_fit = [concat(outer_fit[0], 0), concat(outer_fit[1], WallThickness)];
-    // area of the handle not including the border around it
-    inner_fit = [foreach_add(outer_fit[0], HandleBorder), foreach_add(outer_fit[1], -2*HandleBorder)];
+    // calculate the actualy border size, since the border may be increased to accomodate the wall pattern
+    actual_border_x = (outer_fit[1].x - (total_handle_area.x-2*HandleBorder))/2;
+    actual_border_y = (outer_fit[1].y - (total_handle_area.y-2*HandleBorder))/2;
+    // Calculate the transform and size of the handle cutout. The transform depends on the calculated actual border size
+    inner_fit = [[outer_fit[0].x + actual_border_x, outer_fit[0].y + actual_border_y], 
+                 [total_handle_area.x - 2* HandleBorder, total_handle_area.y - 2*HandleBorder]];
     // create the border by first creating two solid rectangles where the handles should go
     // and then cut out the actual size of the handle without the border
     difference() {
@@ -591,6 +605,16 @@ module handle_border(outer_fit) {
         handle_cutout(inner_fit, HandleCornerRadius);
     }
 }
+
+function no_pattern_handle_fit() = let (
+    distance_from_top = WallThickness - MinWallThickness + Standoff, // distance from top of the basket to the topmost point of the border
+)[
+    [   total_outer_size_mm.y/2 - total_handle_area.x/2,
+        total_height_mm - distance_from_top - total_handle_area.y],
+    [   total_handle_area.x,
+        total_handle_area.y
+    ]
+];
 
 /* 
 calculates the transformation and the total area for the handle cutout respecting the hex pattern
@@ -640,9 +664,20 @@ function grid_pattern_handle_fit(pattern_area) = let (
     total_squares = max_squares_for_area(pattern_area),
     grid_distance = optimum_grid_distance(pattern_area),
     // calculate the adjusted size by increasing the width and height of the handle until it matches the pattern
-    adjusted_width = grid_pattern_handle_x_adjustment(total_handle_area.x, grid_distance.x, PatternSize, total_squares.x),
-    adjusted_height = grid_pattern_handle_y_adjustment(total_handle_area.y, grid_distance.y, PatternSize) - grid_distance.y/2 - PatternSize/2,
-    adjustment_amount = [adjusted_width - total_handle_area.x, adjusted_height - total_handle_area.y],
+    // the grid pattern has two possible snap points, offset by (PatternSize+PatternDistance)/2 in x and y respectively
+    width_0 = grid_pattern_handle_x_adjustment(total_handle_area.x, grid_distance.x, PatternSize, total_squares.x, false),
+    height_0 = grid_pattern_handle_y_adjustment(total_handle_area.y, grid_distance.y, PatternSize, false),
+    width_1 = grid_pattern_handle_x_adjustment(total_handle_area.x, grid_distance.x, PatternSize, total_squares.x, true),
+    height_1 = grid_pattern_handle_y_adjustment(total_handle_area.y, grid_distance.y, PatternSize, true),
+    // choose the adjusted size based on the difference from the 
+    offset_0 = vector_magnitude([width_0, height_0]),
+    offset_1 = vector_magnitude([width_1, height_1]),
+    adjusted_width = offset_1 > offset_0 ? width_0 : width_1,
+    adjusted_height = offset_1 > offset_0 ? height_0 : height_1,
+    adjustment_amount = [
+        adjusted_width - total_handle_area.x, 
+        adjusted_height - total_handle_area.y
+    ],
 )[
     [   total_outer_size_mm.y/2 - adjusted_width/2, 
         total_height_mm - distance_from_top - adjustment_amount.y - total_handle_area.y], 
@@ -652,23 +687,26 @@ function grid_pattern_handle_fit(pattern_area) = let (
 
 /* 
 Calculates the total width of the handle cutout respecting the grid pattern
+Using the alternate_pattern, the pattern will snap to the grid by an offset of half the grid pattern
 */
-function grid_pattern_handle_x_adjustment(width, grid_dist, grid_size, total_squares) = 
+function grid_pattern_handle_x_adjustment(width, grid_dist, grid_size, total_squares, alternate_pattern=false) = 
     let (
         p = 2 * (grid_dist+grid_size),
-        delta = total_squares % 2 == 0 ? 0 : p/2,
+        delta = (total_squares + (alternate_pattern ? 1 : 0)) % 2 == 0 ? 0 : p/2,
         n = ceil((width-delta)/p),
         target = delta + n*p,
     ) target;
 
 /* 
 Calculates the total height of the handle cutout respecting the grid pattern
+Using the alternate_pattern, the pattern will snap to the grid by an offset of half the grid pattern
 */
-function grid_pattern_handle_y_adjustment(height, hex_dist, hex_size) =
+function grid_pattern_handle_y_adjustment(height, grid_dist, grid_size, alternate_pattern=false) =
     let (
-        p = hex_dist + hex_size,
-        n = ceil((height)/p),
-        target = PatternTopDist - Standoff + n*p,
+        p = grid_dist + grid_size,
+        delta = alternate_pattern ? 0 : p/2,
+        n = ceil((height - delta - PatternTopDist + Standoff)/p),
+        target = delta + PatternTopDist - Standoff + n*p,
     ) target;
 
 /*
