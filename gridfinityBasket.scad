@@ -111,16 +111,16 @@ GridPatternRadius = 4; // [0:0.5:10]
 // Add a handle to the sides of the basket
 AddHandle = true;
 
-// Width of the handle. The width may be larger to accommodate the wall pattern.
+// Width of the handle
 HandleWidth = 35; // [20:1:100]
 
-// Height of the handle. The height may be larger to accommodate the wall pattern.
+// Height of the handle
 HandleHeight = 11; // [11:1:30]
 
 // Radii of the corners on the inside of the handles
 HandleCornerRadius = 4; // [0:0.5:5]
 
-// Minimum thickness around the handle
+// Minimum border around the handle. The border may be larger to accommodate the wall pattern.
 HandleBorder = 3; // [2:0.5:5]
 
 /* [Stacking Settings] */
