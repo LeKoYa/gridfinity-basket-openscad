@@ -599,7 +599,7 @@ module handle_border(outer_fit) {
     difference() {
         union() {
             handle_cutout(border_wall_fit); // create the border on the right side of the basket
-            translate([total_inner_size_mm.y+WallThickness, 0]) 
+            translate([total_inner_size_mm.x+WallThickness, 0]) 
                 handle_cutout(border_wall_fit); // create the border on the left side of the basket
         }
         handle_cutout(inner_fit, HandleCornerRadius);
